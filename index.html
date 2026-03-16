@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Valorant Rank OBS</title>
+<style>
+  body { margin: 0; background: transparent; }
+  #rank-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: Arial, sans-serif;
+    color: white;
+    font-size: 24px;
+    text-shadow: 2px 2px 4px black;
+  }
+  #rank-logo { width: 64px; height: 64px; }
+</style>
+</head>
+<body>
+<div id="rank-container">
+  <img id="rank-logo" src="" alt="Rank">
+  <span id="rank-text">Chargement...</span>
+</div>
+
+<script>
+const url = "https://valorantrank.chat/eu/%E3%82%AF%E3%83%AF%E3%83%83%E3%82%AF%E3%82%B9/qwyxx?onlyRank=true&mmrChange=true";
+const rankLogo = document.getElementById("rank-logo");
+const rankText = document.getElementById("rank-text");
+
+const rankMap = {
+  "Iron 1": 3,      "Iron 2": 4,      "Iron 3": 5,
+  "Bronze 1": 6,    "Bronze 2": 7,    "Bronze 3": 8,
+  "Silver 1": 9,    "Silver 2": 10,   "Silver 3": 11,
+  "Gold 1": 12,     "Gold 2": 13,     "Gold 3": 14,
+  "Platinum 1": 15, "Platinum 2": 16, "Platinum 3": 17,
+  "Diamond 1": 18,  "Diamond 2": 19,  "Diamond 3": 20,
+  "Ascendant 1": 21,"Ascendant 2": 22,"Ascendant 3": 23,
+  "Immortal 1": 24, "Immortal 2": 25, "Immortal 3": 26,
+  "Radiant": 27
+};
+
+const TIER_UUID = "03621f52-342b-cf4e-4f86-9350a49c6d04";
+
+function updateDisplay() {
+  fetch("https://corsproxy.io/?" + encodeURIComponent(url))
+    .then(res => res.text())
+    .then(data => {
+      rankText.textContent = data.trim();
+
+      const foundRank = Object.keys(rankMap).find(rank =>
+        data.toLowerCase().includes(rank.toLowerCase())
+      );
+      if (foundRank) {
+        rankLogo.src = `https://media.valorant-api.com/competitivetiers/${TIER_UUID}/${rankMap[foundRank]}/largeicon.png`;
+      }
+    })
+    .catch(err => {
+      console.error("Erreur fetch:", err);
+      rankText.textContent = "Erreur de chargement";
+    });
+}
+
+updateDisplay();
+setInterval(updateDisplay, 3000);
+</script>
+</body>
+</html>
